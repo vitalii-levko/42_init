@@ -1,0 +1,20 @@
+#!/bin/sh
+cat > /root/croncheck.sh << EOF
+if [ ! -f /root/cronmd5 ]
+then
+	md5sum /etc/crontab | cut -d " " -f 1 > /root/cronmd5
+fi
+
+MD5SUM='cat /root/cronmd5'
+TABSUM='md5sum /etc/crontab | cut -d " " -f 1'
+
+if [ "$MD5SUM" != "$TABSUM" ]
+then
+	md5sum /etc/crontab > /root/cronmd5
+	mail -s "/etc/crontab file has been modified" root@localhost.com < /etc/crontab
+fi
+EOF
+chmod a+rx /root/croncheck.sh
+echo "0 0 * * * root sh /root/croncheck.sh" >> cronjob
+crontab cronjob
+rm cronjob

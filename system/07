@@ -1,0 +1,2 @@
+#!/bin/sh
+service ssh status | grep "Main PID" | tr -d " Main PID: " | tr -d " (sshd)"
